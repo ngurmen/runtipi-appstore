@@ -10,6 +10,7 @@ Requires Runtipi **v4.0.0** or above. Apps using the current dynamic compose for
 | --- | --- |
 | [Apprise](apps/apprise/) | Push notifications to 100+ services via a simple API (nginx API-key gate) |
 | [Immich Kiosk](apps/immich-kiosk/) | Configurable Immich photo/video slideshows for browsers and devices |
+| [PostgreSQL](apps/postgresql/) | Standalone PostgreSQL 18 database server |
 | [Whoami](apps/whoami/) | Sample Traefik whoami app from the template |
 
 ## Repository structure

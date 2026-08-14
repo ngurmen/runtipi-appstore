@@ -1,0 +1,55 @@
+{
+  "name": "PostgreSQL",
+  "id": "postgresql",
+  "available": true,
+  "short_desc": "Standalone PostgreSQL 18 database server.",
+  "author": "PostgreSQL Global Development Group",
+  "port": 5433,
+  "categories": [
+    "data",
+    "utilities"
+  ],
+  "description": "Official PostgreSQL 18 server for shared homelab databases. Data persists under the app data directory; tune further via user-config overlays.",
+  "tipi_version": 1,
+  "version": "18.6",
+  "source": "https://github.com/docker-library/postgres",
+  "website": "https://www.postgresql.org/",
+  "exposable": false,
+  "no_gui": true,
+  "dynamic_config": true,
+  "min_tipi_version": "4.5.0",
+  "supported_architectures": [
+    "arm64",
+    "amd64"
+  ],
+  "created_at": 1786684308015,
+  "updated_at": 1786684308015,
+  "form_fields": [
+    {
+      "type": "password",
+      "label": "Postgres Password",
+      "hint": "Password for the database superuser (required).",
+      "min": 8,
+      "required": true,
+      "env_variable": "POSTGRES_PASSWORD"
+    },
+    {
+      "type": "text",
+      "label": "Postgres User",
+      "hint": "Database superuser name.",
+      "placeholder": "postgres",
+      "required": false,
+      "default": "postgres",
+      "env_variable": "POSTGRES_USER"
+    },
+    {
+      "type": "text",
+      "label": "Postgres Database",
+      "hint": "Initial database created on first start.",
+      "placeholder": "postgres",
+      "required": false,
+      "default": "postgres",
+      "env_variable": "POSTGRES_DB"
+    }
+  ]
+}
