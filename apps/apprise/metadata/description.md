@@ -36,7 +36,7 @@ Stateful mode defaults to **simple** (`{KEY}.cfg` / `{KEY}.yml` on disk).
 
 ## Customizing nginx
 
-The shipped template is `nginx/default.conf.template`. To override it, use Runtipi [user-config](https://runtipi.io/docs/guides/customize-app-config) and mount your own template over `/etc/nginx/templates/default.conf.template`.
+The nginx reverse-proxy config is embedded in `docker-compose.yml` (Runtipi relative volume mounts are unreliable for this). To override it, use [user-config](https://runtipi.io/docs/guides/customize-app-config) with your own `docker-compose.yml` for the `nginx` service.
 
 ## Links
 
