@@ -1,14 +1,18 @@
 {
-  "name": "example-appstore",
+  "name": "gurmen-runtipi-appstore",
   "version": "1.0.0",
-  "description": "",
+  "description": "Gurmen homelab custom Runtipi app store",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "bun test"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "runtipi",
+    "appstore",
+    "homelab"
+  ],
+  "author": "Gurmen",
   "license": "ISC",
   "devDependencies": {
     "@types/bun": "latest",
