@@ -10,7 +10,7 @@
     "automation"
   ],
   "description": "Apprise API lets you send notifications to 100+ services from a lightweight HTTP gateway, with optional persistent configuration keys.",
-  "tipi_version": 1,
+  "tipi_version": 2,
   "version": "1.5.1",
   "source": "https://github.com/caronc/apprise-api",
   "website": "https://appriseit.com/",
@@ -25,10 +25,11 @@
   "updated_at": 1786680322626,
   "form_fields": [
     {
-      "type": "random",
+      "type": "password",
       "label": "API Key",
-      "hint": "Required as X-API-Key header on /notify, /add, /get, /del, and /cfg paths.",
-      "min": 32,
+      "hint": "Secret required as X-API-Key header on /notify, /add, /get, /del, and /cfg paths.",
+      "placeholder": "your-apprise-api-key",
+      "min": 8,
       "required": true,
       "env_variable": "APPRISE_API_KEY"
     },

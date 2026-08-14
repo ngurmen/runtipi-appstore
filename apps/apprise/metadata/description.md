@@ -13,7 +13,7 @@ Timezone follows your Runtipi `TZ` setting.
 
 ## Authentication
 
-API paths (`/notify`, `/add`, `/get`, `/del`, `/cfg`) require the install-time **API Key** via the `X-API-Key` header. The web UI under `/` is not API-key gated (restrict exposure with Open port / Traefik as needed).
+API paths (`/notify`, `/add`, `/get`, `/del`, `/cfg`) require the **API Key** you set at install, sent as the `X-API-Key` header. The web UI under `/` is not API-key gated (restrict exposure with Open port / Traefik as needed).
 
 Example:
 
