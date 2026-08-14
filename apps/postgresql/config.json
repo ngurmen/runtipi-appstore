@@ -10,7 +10,7 @@
     "utilities"
   ],
   "description": "Official PostgreSQL 18 server for shared homelab databases. Data persists under the app data directory; tune further via user-config overlays.",
-  "tipi_version": 2,
+  "tipi_version": 4,
   "version": "18.6",
   "source": "https://github.com/docker-library/postgres",
   "website": "https://www.postgresql.org/",
