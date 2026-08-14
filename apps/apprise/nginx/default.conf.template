@@ -1,0 +1,52 @@
+server {
+    listen 80;
+    server_name _;
+
+    client_max_body_size 10m;
+
+    # Protected paths requiring API key
+    location ~ ^/(notify|add|get|del|cfg)(/.*)?$ {
+        # Require X-API-Key for these API paths
+        if ($http_x_api_key = "") {
+            return 401;
+        }
+
+        set $api_key_valid 0;
+        if ($http_x_api_key = "$APPRISE_API_KEY") {
+            set $api_key_valid 1;
+        }
+
+        if ($api_key_valid = 0) {
+            return 401;
+        }
+
+        # Restrict methods commonly used by Apprise
+        if ($request_method !~ ^(GET|POST)$) {
+            return 405;
+        }
+
+        # Proxy headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $host;
+
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        proxy_pass http://apprise:8000;
+    }
+
+    # Root and other paths - restricted by IP
+    location / {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $host;
+
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        proxy_pass http://apprise:8000;
+    }
+}

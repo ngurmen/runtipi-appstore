@@ -1,0 +1,31 @@
+services:
+  apprise:
+    image: caronc/apprise:1.5.1
+    user: '1000'
+    volumes:
+      - ${APP_DATA_DIR}/data/config:/config
+      - ${APP_DATA_DIR}/data/plugin:/plugin
+      - ${APP_DATA_DIR}/data/attach:/attach
+    environment:
+      - TZ=${TZ}
+      - APPRISE_STATEFUL_MODE=${APPRISE_STATEFUL_MODE}
+      - APPRISE_WORKER_COUNT=${APPRISE_WORKER_COUNT}
+    x-runtipi:
+      is_main: false
+      internal_port: 8000
+
+  nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      - apprise
+    volumes:
+      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+    environment:
+      - APPRISE_API_KEY=${APPRISE_API_KEY}
+      - NGINX_ENVSUBST_FILTER=APPRISE_API_KEY
+    x-runtipi:
+      is_main: true
+      internal_port: 80
+
+x-runtipi:
+  schema_version: 2
