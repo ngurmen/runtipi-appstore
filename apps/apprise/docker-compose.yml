@@ -23,11 +23,11 @@ services:
     entrypoint:
       - /bin/sh
       - -c
-    # $$ → $ for docker-compose; shell then expands ${APPRISE_API_KEY} from env.
-    # Write conf.d directly and skip the image envsubst entrypoint (it eats $http_*).
+    # $$ → $ after compose interpolation. Quoted 'EOF' prevents the shell from
+    # eating nginx vars like $http_x_api_key. envsubst then injects only the API key.
     command:
       - |
-        cat > /etc/nginx/conf.d/default.conf << EOF
+        cat > /tmp/default.conf.template << 'EOF'
         server {
             listen 80;
             server_name _;
@@ -76,6 +76,7 @@ services:
             }
         }
         EOF
+        envsubst '$${APPRISE_API_KEY}' < /tmp/default.conf.template > /etc/nginx/conf.d/default.conf
         nginx -t && exec nginx -g 'daemon off;'
     x-runtipi:
       is_main: true
