@@ -1,0 +1,28 @@
+services:
+  immich-kiosk:
+    image: ghcr.io/damongolding/immich-kiosk:0.42.0
+    user: '1000'
+    tty: true
+    volumes:
+      - ${APP_DATA_DIR}/data:/config
+      - ${APP_DATA_DIR}/data/offline-assets:/offline-assets
+    environment:
+      - LANG=${KIOSK_LANG}
+      - TZ=${TZ}
+      - KIOSK_IMMICH_URL=${KIOSK_IMMICH_URL}
+      - KIOSK_IMMICH_API_KEY=${KIOSK_IMMICH_API_KEY}
+      - KIOSK_IMMICH_EXTERNAL_URL=${KIOSK_IMMICH_EXTERNAL_URL}
+    healthcheck:
+      test:
+        - CMD
+        - /kiosk
+        - --healthcheck
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    x-runtipi:
+      is_main: true
+      internal_port: 3000
+x-runtipi:
+  schema_version: 2
