@@ -11,9 +11,13 @@ Standalone [PostgreSQL](https://www.postgresql.org/) 18 database server using th
 | Container port | `5432` |
 | Data volume | `${APP_DATA_DIR}/data` → `/var/lib/postgresql` (Postgres 18+ layout) |
 
+Install form fields map to `DB_PASSWORD` / `DB_USER` / `DB_NAME` (not `POSTGRES_*`) so they are not overridden by Runtipi’s internal database environment during Compose interpolation.
+
 Enable **Open port** at install if LAN clients should connect to `HOST:5433`.
 
 Timezone follows Runtipi `TZ` (`PGTZ`).
+
+**Password tip:** Prefer passwords without `$` or `#` — those characters break unquoted env-file / Compose interpolation.
 
 ## Connect
 

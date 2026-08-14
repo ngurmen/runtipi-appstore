@@ -10,7 +10,7 @@
     "utilities"
   ],
   "description": "Official PostgreSQL 18 server for shared homelab databases. Data persists under the app data directory; tune further via user-config overlays.",
-  "tipi_version": 1,
+  "tipi_version": 2,
   "version": "18.6",
   "source": "https://github.com/docker-library/postgres",
   "website": "https://www.postgresql.org/",
@@ -28,10 +28,10 @@
     {
       "type": "password",
       "label": "Postgres Password",
-      "hint": "Password for the database superuser (required).",
+      "hint": "Password for the database superuser. Avoid $ and # in the password (Compose/env-file limits).",
       "min": 8,
       "required": true,
-      "env_variable": "POSTGRES_PASSWORD"
+      "env_variable": "DB_PASSWORD"
     },
     {
       "type": "text",
@@ -40,7 +40,7 @@
       "placeholder": "postgres",
       "required": false,
       "default": "postgres",
-      "env_variable": "POSTGRES_USER"
+      "env_variable": "DB_USER"
     },
     {
       "type": "text",
@@ -49,7 +49,7 @@
       "placeholder": "postgres",
       "required": false,
       "default": "postgres",
-      "env_variable": "POSTGRES_DB"
+      "env_variable": "DB_NAME"
     }
   ]
 }

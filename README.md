@@ -42,3 +42,8 @@ Prefer `docker-compose.yml` with `x-runtipi` over legacy `docker-compose.json`. 
 
 - [config.json options](https://runtipi.io/docs/reference/config-json)
 - [Dynamic compose](https://runtipi.io/docs/reference/dynamic-compose)
+
+## Form field / password tips
+
+- **`exposable`** in `config.json` controls Reverse proxy / Domain name / local domain toggles. Set `"exposable": true` only for HTTP apps meant for Traefik. Databases should use **Open port** instead (`exposable: false` is intentional for PostgreSQL).
+- Avoid **`$`** and **`#`** in passwords (and other secrets written to `app.env`). Runtipi writes unquoted env values and Docker Compose interpolates `$…`, so those characters can truncate or alter the secret before the container sees it.
