@@ -43,7 +43,7 @@ docker exec -it vault-<appstore-slug> vault operator unseal
 
 Repeat until `Sealed` is `false`. Then log into the UI with the root token.
 
-After every container restart you must unseal again unless you add auto-unseal via user-config.
+After every container restart you must unseal again unless you configure [auto-unseal](#auto-unseal).
 
 ## Connect
 
@@ -76,11 +76,38 @@ docker exec -it vault-<appstore-slug> vault operator raft snapshot save /vault/d
 
 Copy `backup.snap` off the host. Restore with `vault operator raft snapshot restore`.
 
-## User-config overlays
+## Auto-unseal
 
-Host-specific TLS, auto-unseal, extra listeners, or audit devices belong in [user-config](https://runtipi.io/docs/guides/customize-app-config), not this store package.
+This package uses Shamir unseal on purpose. Auto-unseal needs an external KMS, HSM, or a **second** Vault, so it belongs in [user-config](https://runtipi.io/docs/guides/customize-app-config).
 
-Example (`user-config/<appstore-slug>/vault/docker-compose.yml`) to mount extra HCL next to the generated config:
+HashiCorp auto-unseal options: [AWS KMS](https://developer.hashicorp.com/vault/docs/configuration/seal/awskms), [GCP Cloud KMS](https://developer.hashicorp.com/vault/docs/configuration/seal/gcpckms), [Azure Key Vault](https://developer.hashicorp.com/vault/docs/configuration/seal/azurekeyvault), [Transit](https://developer.hashicorp.com/vault/docs/configuration/seal/transit) (another Vault), [PKCS#11](https://developer.hashicorp.com/vault/docs/configuration/seal/pkcs11) (HSM).
+
+A script that reads Shamir keys from a file on this host is **not** auto-unseal — the keys sit next to the data they protect.
+
+If the KMS key (or transit Vault) is deleted or permanently unreachable, this Vault cannot be unsealed, **including from Raft snapshots**. Keep recovery keys offline.
+
+### New install
+
+Add the `seal` stanza **before** the first `vault operator init`. Init then prints **recovery keys** (not unseal keys). Store those the same way you would Shamir shares — they are still required for generate-root and similar operations.
+
+### Existing Shamir install (migrate)
+
+Downtime is required. Take a [Raft snapshot](#raft-snapshots) first.
+
+1. Add the `seal` stanza via user-config and restart the app. Vault stays sealed.
+2. Migrate with the old Shamir keys (threshold times, default 3):
+
+```bash
+docker exec -it vault-<appstore-slug> vault operator unseal -migrate
+```
+
+3. After migration, later restarts auto-unseal. Keep the new **recovery keys** offline.
+
+See [seal migration](https://developer.hashicorp.com/vault/docs/concepts/seal#seal-migration).
+
+### User-config overlay
+
+Mount extra HCL and pass KMS/transit credentials as environment variables (do not put secrets in `extra.hcl`). Example (`user-config/<appstore-slug>/vault/docker-compose.yml`):
 
 ```yaml
 services:
@@ -90,13 +117,44 @@ services:
       - ${APP_DATA_DIR}/logs:/vault/logs
       - ${APP_DATA_DIR}/config:/vault/config
       - /media/runtipi/user-config/<appstore-slug>/vault/extra.hcl:/vault/config/extra.hcl:ro
+    environment:
+      - AWS_ACCESS_KEY_ID=AKIA...
+      - AWS_SECRET_ACCESS_KEY=...
+      # Transit only — do not set VAULT_TOKEN here; it would override the local CLI token.
+      # - VAULT_TRANSIT_SEAL_TOKEN=hvs....
 ```
+
+`extra.hcl` (AWS KMS):
+
+```hcl
+seal "awskms" {
+  region     = "us-east-1"
+  kms_key_id = "alias/vault-unseal"
+}
+```
+
+`extra.hcl` (Transit — a **different** Vault; this app’s `VAULT_ADDR` is localhost, so set `address` here):
+
+```hcl
+seal "transit" {
+  address         = "http://other-vault:8200"
+  token           = "env://VAULT_TRANSIT_SEAL_TOKEN"
+  key_name        = "autounseal"
+  mount_path      = "transit/"
+  tls_skip_verify = "true"
+}
+```
+
+The transit token needs `update` on `transit/encrypt/<key>` and `transit/decrypt/<key>`. Use an orphan periodic token so expiry of a parent token does not reseal this Vault.
+
+Enable user-config for the app, then restart.
 
 Vault loads every `.hcl` / `.json` in `/vault/config`. Do not replace `local.json` — it is rewritten from `VAULT_LOCAL_CONFIG` on each start.
 
 ## Links
 
 - [Vault documentation](https://developer.hashicorp.com/vault/docs)
+- [Seal / auto-unseal](https://developer.hashicorp.com/vault/docs/concepts/seal)
 - [Run Vault on Docker](https://developer.hashicorp.com/vault/docs/deploy/run-on-docker)
 - [Official image](https://hub.docker.com/r/hashicorp/vault)
 - [Runtipi user-config](https://runtipi.io/docs/guides/customize-app-config)
