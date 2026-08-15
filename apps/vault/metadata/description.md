@@ -14,6 +14,7 @@ This is **not** a dev server. Vault starts sealed. You must initialize it once, 
 | Storage | Raft at `/vault/data` |
 | UI | Enabled at `/ui` |
 | TLS (in-container) | Disabled — Traefik terminates TLS when exposed |
+| Process user | Runtipi `${UID}:${GID}` (bind mounts; no `chown`) |
 
 | Host path (under app data) | Container | Purpose |
 | --- | --- | --- |

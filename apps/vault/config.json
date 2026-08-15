@@ -10,7 +10,7 @@
     "utilities"
   ],
   "description": "HashiCorp Vault stores, controls access to, and audits secrets such as tokens, passwords, certificates, and encryption keys. Single-node Raft storage with the web UI enabled; initialize and unseal after first start.",
-  "tipi_version": 1,
+  "tipi_version": 2,
   "version": "2.0.4",
   "source": "https://github.com/hashicorp/vault",
   "website": "https://developer.hashicorp.com/vault",
@@ -22,6 +22,6 @@
     "amd64"
   ],
   "created_at": 1786809257000,
-  "updated_at": 1786809257000,
+  "updated_at": 1786810000000,
   "form_fields": []
 }
