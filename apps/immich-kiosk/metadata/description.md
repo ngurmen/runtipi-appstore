@@ -20,6 +20,8 @@ At install time you provide:
 
 Timezone follows your Runtipi `TZ` setting.
 
+Container name: `immich-kiosk_<app-store>-immich-kiosk-1` (`{app-id}_<app-store>-{service}-1`). Confirm with `docker ps`.
+
 Advanced options can be set by editing `config.yaml` in the app data directory, or via [URL query parameters](https://docs.immichkiosk.app/configuration/url-parameters/). Persistent data (including offline assets) lives under the app's data folder.
 
 ## Common use cases

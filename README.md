@@ -23,6 +23,8 @@ Each app lives under `apps/<app-id>/`:
 - `metadata/description.md` — dashboard description
 - `metadata/logo.jpg` — square app icon
 
+Runtipi Compose container names are `{app-id}_<app-store>-{service}-1` (e.g. `vault_<app-store>-vault-1`, `postgresql_<app-store>-postgresql-1`). `{app}-{store}` is not a DNS name. Confirm with `docker ps`.
+
 ## Adding this store to Runtipi
 
 1. Open **Settings → App Stores → Add App Store**

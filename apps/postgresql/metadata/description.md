@@ -21,13 +21,13 @@ Timezone follows Runtipi `TZ` (`PGTZ`).
 
 ## Connect
 
-From another container on the Runtipi network:
+From another container on the Runtipi network, use the Compose container name `{app-id}_<app-store>-{service}-1` (not `{app}-{store}`):
 
 ```text
-postgresql://USER:PASSWORD@postgresql-<appstore-slug>:5432/DATABASE
+postgresql://USER:PASSWORD@postgresql_<app-store>-postgresql-1:5432/DATABASE
 ```
 
-(Service DNS name may vary slightly by store slug; check `docker network inspect` if unsure.)
+Confirm with `docker ps`.
 
 From the host / LAN (with open port):
 
@@ -41,16 +41,16 @@ Baseline image defaults are used on purpose. Host-specific tuning and TLS belong
 
 ### User-config overlay
 
-Example (`user-config/<appstore-slug>/postgresql/docker-compose.yml`):
+Example (`user-config/<app-store>/postgresql/docker-compose.yml`):
 
 ```yaml
 services:
   postgresql:
     volumes:
       - ${APP_DATA_DIR}/data:/var/lib/postgresql
-      - /media/runtipi/user-config/<appstore-slug>/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf:ro
-      - /media/runtipi/user-config/<appstore-slug>/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
-      - /media/runtipi/user-config/<appstore-slug>/postgresql/ssl:/etc/postgresql/ssl:ro
+      - /media/runtipi/user-config/<app-store>/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - /media/runtipi/user-config/<app-store>/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      - /media/runtipi/user-config/<app-store>/postgresql/ssl:/etc/postgresql/ssl:ro
     command:
       - postgres
       - -c
@@ -59,7 +59,7 @@ services:
       - hba_file=/etc/postgresql/pg_hba.conf
 ```
 
-Replace `<appstore-slug>` with your store name (e.g. `gurmen`). Place conf files and `ssl/server.crt` + `ssl/server.key` next to that compose file, enable user-config for the app, then restart.
+Replace `<app-store>` with your Runtipi store slug. Place conf files and `ssl/server.crt` + `ssl/server.key` next to that compose file, enable user-config for the app, then restart.
 
 Tip: start from the image sample:
 
@@ -81,7 +81,7 @@ openssl req -new -x509 -days 3650 -nodes \
 chmod 600 server.key && chown 999:999 server.crt server.key
 ```
 
-Put `server.crt` / `server.key` under `user-config/<appstore-slug>/postgresql/ssl/`.
+Put `server.crt` / `server.key` under `user-config/<app-store>/postgresql/ssl/`.
 
 In `postgresql.conf`, set these three lines (paths must match the volume mount):
 

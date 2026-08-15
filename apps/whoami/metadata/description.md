@@ -2,6 +2,8 @@
 
 Tiny Go webserver that prints OS information and HTTP request to output.
 
+Container name: `whoami_<app-store>-whoami-1` (`{app-id}_<app-store>-{service}-1`). Confirm with `docker ps`.
+
 ## Usage
 
 ### Paths

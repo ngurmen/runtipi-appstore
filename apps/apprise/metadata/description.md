@@ -4,10 +4,10 @@ Lightweight HTTP API for [Apprise](https://github.com/caronc/apprise) — send n
 
 ## Architecture
 
-This app runs two containers:
+This app runs two containers (`{app-id}_<app-store>-{service}-1`):
 
-1. **apprise** (`caronc/apprise`) — Apprise API on port 8000  
-2. **nginx** — reverse proxy on port 80 that requires an API key before forwarding
+1. **apprise** (`apprise_<app-store>-apprise-1`) — Apprise API on port 8000  
+2. **nginx** (`apprise_<app-store>-nginx-1`) — reverse proxy on port 80 that requires an API key before forwarding
 
 Timezone follows your Runtipi `TZ` setting.
 

@@ -1,8 +1,8 @@
 # HashiCorp Vault
 
-Identity-based secrets and encryption management using the [official Docker image](https://hub.docker.com/r/hashicorp/vault). Single-node [Raft integrated storage](https://developer.hashicorp.com/vault/docs/configuration/storage/raft) with the web UI enabled.
+Identity-based secrets and encryption management using the [official Docker image](https://hub.docker.com/r/hashicorp/vault) (Community 2.0.4). Single-node [Raft integrated storage](https://developer.hashicorp.com/vault/docs/configuration/storage/raft) with the [web UI](https://developer.hashicorp.com/vault/docs/ui) enabled.
 
-This is **not** a dev server. Vault starts sealed. You must initialize it once, store the unseal keys and root token offline, and unseal after every restart.
+This is **not** a dev server. Vault starts uninitialized and sealed. The first visit to `/ui` walks you through init (key shares + threshold), download of the root token and shares, then unseal. After every restart you unseal again in the same UI unless you configure [auto-unseal](#auto-unseal).
 
 ## Defaults
 
@@ -26,41 +26,34 @@ Timezone follows Runtipi `TZ`.
 
 ## First start — initialize and unseal
 
-1. Install and start the app. The UI will load but Vault is uninitialized / sealed.
-2. From the host, initialize (default Shamir: 5 shares, threshold 3):
+Do this in the **UI**. Open the app (Runtipi Open, or `http://HOST:8200/ui`). Vault 2.x serves the GUI on the same listener as the API; `/` redirects to `/ui`.
+
+1. **Initialize.** The first screen asks for Shamir **key shares** (how many pieces to split the unseal key into) and **key threshold** (how many pieces are required to unseal). Defaults are 5 shares / 3 threshold; a homelab can use `1` / `1` if a single operator holds the only key. Optional: encrypt shares and/or the root token with PGP before they are shown.
+2. Click **Initialize**. The next screen shows the **unseal key shares** and the **initial root token**. Copy them and use **Download keys** before you leave the page. Vault does not store these values; they cannot be recovered.
+3. **Unseal.** Continue in the UI and paste distinct shares until the progress reaches the threshold (for example 3 of 5). Order does not matter.
+4. **Sign in** with the initial root token.
+
+Keep the downloaded keys and root token off this server (password manager, printed paper, offline disk).
+
+After every container restart, `/ui` shows the unseal screen again. Enter the threshold of shares, then sign in. Skip this only if you set up [auto-unseal](#auto-unseal).
+
+### CLI alternative
+
+Same operations, if you prefer the container CLI (`VAULT_ADDR` is already `http://127.0.0.1:8200` inside the container). Runtipi names containers `{app-id}_<app-store>-{service}-1`:
 
 ```bash
-docker exec -it vault-<appstore-slug> vault operator init
+docker exec -it vault_<app-store>-vault-1 vault operator init
+docker exec -it vault_<app-store>-vault-1 vault operator unseal   # repeat to threshold
 ```
 
-Replace `<appstore-slug>` with your store name (e.g. `gurmen`). Check `docker ps` if unsure.
-
-3. Save the **unseal keys** and **initial root token** somewhere that is not this server (password manager, printed paper, offline disk). Vault cannot recover them.
-4. Unseal with any 3 of the 5 keys:
-
-```bash
-docker exec -it vault-<appstore-slug> vault operator unseal
-```
-
-Repeat until `Sealed` is `false`. Then log into the UI with the root token.
-
-After every container restart you must unseal again unless you configure [auto-unseal](#auto-unseal).
+Confirm with `docker ps`.
 
 ## Connect
 
-UI / API via Runtipi (Open port or local domain):
-
-```text
-http://HOST:8200/ui
-```
-
-From another container on the Runtipi network:
-
-```text
-http://vault-<appstore-slug>:8200
-```
-
-CLI inside the container already has `VAULT_ADDR=http://127.0.0.1:8200`.
+| From | URL |
+| --- | --- |
+| Browser (Open port / local domain) | `http://HOST:8200/ui` |
+| Other containers on the Runtipi network | `http://vault_<app-store>-vault-1:8200` |
 
 ## Security notes
 
@@ -72,7 +65,7 @@ CLI inside the container already has `VAULT_ADDR=http://127.0.0.1:8200`.
 ## Raft snapshots
 
 ```bash
-docker exec -it vault-<appstore-slug> vault operator raft snapshot save /vault/data/backup.snap
+docker exec -it vault_<app-store>-vault-1 vault operator raft snapshot save /vault/data/backup.snap
 ```
 
 Copy `backup.snap` off the host. Restore with `vault operator raft snapshot restore`.
@@ -89,7 +82,7 @@ If the KMS key (or transit Vault) is deleted or permanently unreachable, this Va
 
 ### New install
 
-Add the `seal` stanza **before** the first `vault operator init`. Init then prints **recovery keys** (not unseal keys). Store those the same way you would Shamir shares — they are still required for generate-root and similar operations.
+Add the `seal` stanza **before** the first init (UI or CLI). Init then returns **recovery keys** (not unseal keys). Store those the same way you would Shamir shares — they are still required for generate-root and similar operations. Later restarts unseal without the UI prompt.
 
 ### Existing Shamir install (migrate)
 
@@ -99,7 +92,7 @@ Downtime is required. Take a [Raft snapshot](#raft-snapshots) first.
 2. Migrate with the old Shamir keys (threshold times, default 3):
 
 ```bash
-docker exec -it vault-<appstore-slug> vault operator unseal -migrate
+docker exec -it vault_<app-store>-vault-1 vault operator unseal -migrate
 ```
 
 3. After migration, later restarts auto-unseal. Keep the new **recovery keys** offline.
@@ -108,7 +101,7 @@ See [seal migration](https://developer.hashicorp.com/vault/docs/concepts/seal#se
 
 ### User-config overlay
 
-Mount extra HCL and pass KMS/transit credentials as environment variables (do not put secrets in `extra.hcl`). Example (`user-config/<appstore-slug>/vault/docker-compose.yml`):
+Mount extra HCL and pass KMS/transit credentials as environment variables (do not put secrets in `extra.hcl`). Example (`user-config/<app-store>/vault/docker-compose.yml`):
 
 ```yaml
 services:
@@ -117,7 +110,7 @@ services:
       - ${APP_DATA_DIR}/data:/vault/data
       - ${APP_DATA_DIR}/logs:/vault/logs
       - ${APP_DATA_DIR}/config:/vault/config
-      - /media/runtipi/user-config/<appstore-slug>/vault/extra.hcl:/vault/config/extra.hcl:ro
+      - /media/runtipi/user-config/<app-store>/vault/extra.hcl:/vault/config/extra.hcl:ro
     environment:
       - AWS_ACCESS_KEY_ID=AKIA...
       - AWS_SECRET_ACCESS_KEY=...
@@ -154,8 +147,10 @@ Vault loads every `.hcl` / `.json` in `/vault/config`. Do not replace `local.jso
 
 ## Links
 
-- [Vault documentation](https://developer.hashicorp.com/vault/docs)
+- [Vault 2.x documentation](https://developer.hashicorp.com/vault/docs)
+- [Vault UI](https://developer.hashicorp.com/vault/docs/ui)
+- [Initialize (`operator init`)](https://developer.hashicorp.com/vault/docs/commands/operator/init)
 - [Seal / auto-unseal](https://developer.hashicorp.com/vault/docs/concepts/seal)
-- [Run Vault on Docker](https://developer.hashicorp.com/vault/docs/deploy/run-on-docker)
+- [2.x release notes](https://developer.hashicorp.com/vault/docs/updates/release-notes)
 - [Official image](https://hub.docker.com/r/hashicorp/vault)
 - [Runtipi user-config](https://runtipi.io/docs/guides/customize-app-config)
