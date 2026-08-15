@@ -1,0 +1,40 @@
+services:
+  vault:
+    image: hashicorp/vault:2.0.4
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ${APP_DATA_DIR}/data:/vault/data
+      - ${APP_DATA_DIR}/logs:/vault/logs
+      - ${APP_DATA_DIR}/config:/vault/config
+    environment:
+      - TZ=${TZ}
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_API_ADDR=http://127.0.0.1:8200
+      # disable_mlock is required for Raft (integrated storage). TLS is off
+      # in-container; Traefik terminates TLS when the app is exposed.
+      - 'VAULT_LOCAL_CONFIG={"ui":true,"disable_mlock":true,"api_addr":"http://127.0.0.1:8200","cluster_addr":"http://127.0.0.1:8201","storage":{"raft":{"path":"/vault/data","node_id":"node1"}},"listener":{"tcp":{"address":"0.0.0.0:8200","tls_disable":true}}}'
+    # Official image chowns /vault/file but not /vault/data (Raft path).
+    entrypoint:
+      - /bin/sh
+      - -c
+      - mkdir -p /vault/data /vault/logs && chown -R vault:vault /vault/data /vault/logs && exec docker-entrypoint.sh server
+    healthcheck:
+      # Sealed / uninitialized (exit 2) is a valid Vault state — do not restart.
+      test:
+        - CMD-SHELL
+        - vault status >/dev/null 2>&1 || test $$? -eq 2
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    x-runtipi:
+      is_main: true
+      internal_port: 8200
+
+x-runtipi:
+  schema_version: 2
