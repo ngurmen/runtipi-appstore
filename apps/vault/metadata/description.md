@@ -145,10 +145,6 @@ Enable user-config for the app, then restart.
 
 Vault loads every `.hcl` / `.json` in `/vault/config`. Do not replace `local.json` — it is rewritten from `VAULT_LOCAL_CONFIG` on each start.
 
-## Passkey UI login (Pocket ID)
-
-OIDC does not unseal Vault. After unseal, the UI can sign in with Pocket ID passkeys. Step-by-step: [oidc-pocket-id.md](../oidc-pocket-id.md).
-
 ## Links
 
 - [Vault 2.x documentation](https://developer.hashicorp.com/vault/docs)
@@ -158,4 +154,3 @@ OIDC does not unseal Vault. After unseal, the UI can sign in with Pocket ID pass
 - [2.x release notes](https://developer.hashicorp.com/vault/docs/updates/release-notes)
 - [Official image](https://hub.docker.com/r/hashicorp/vault)
 - [Runtipi user-config](https://runtipi.io/docs/guides/customize-app-config)
-- [Vault UI + Pocket ID passkeys](../oidc-pocket-id.md)
