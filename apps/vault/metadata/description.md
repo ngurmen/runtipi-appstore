@@ -101,7 +101,7 @@ See [seal migration](https://developer.hashicorp.com/vault/docs/concepts/seal#se
 
 ### User-config overlay
 
-Mount extra HCL and pass KMS/transit credentials as environment variables (do not put secrets in `extra.hcl`). Example (`user-config/<app-store>/vault/docker-compose.yml`):
+Mount extra HCL and pass KMS/transit credentials as environment variables (do not put secrets in `extra.hcl`). Example (`<runtipi-root>/user-config/<app-store>/vault/docker-compose.yml`):
 
 ```yaml
 services:
@@ -110,7 +110,7 @@ services:
       - ${APP_DATA_DIR}/data:/vault/data
       - ${APP_DATA_DIR}/logs:/vault/logs
       - ${APP_DATA_DIR}/config:/vault/config
-      - /media/runtipi/user-config/<app-store>/vault/extra.hcl:/vault/config/extra.hcl:ro
+      - <runtipi-root>/user-config/<app-store>/vault/extra.hcl:/vault/config/extra.hcl:ro
     environment:
       - AWS_ACCESS_KEY_ID=AKIA...
       - AWS_SECRET_ACCESS_KEY=...

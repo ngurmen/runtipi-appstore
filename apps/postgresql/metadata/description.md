@@ -41,16 +41,16 @@ Baseline image defaults are used on purpose. Host-specific tuning and TLS belong
 
 ### User-config overlay
 
-Example (`user-config/<app-store>/postgresql/docker-compose.yml`):
+Example (`<runtipi-root>/user-config/<app-store>/postgresql/docker-compose.yml`):
 
 ```yaml
 services:
   postgresql:
     volumes:
       - ${APP_DATA_DIR}/data:/var/lib/postgresql
-      - /media/runtipi/user-config/<app-store>/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf:ro
-      - /media/runtipi/user-config/<app-store>/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
-      - /media/runtipi/user-config/<app-store>/postgresql/ssl:/etc/postgresql/ssl:ro
+      - <runtipi-root>/user-config/<app-store>/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - <runtipi-root>/user-config/<app-store>/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      - <runtipi-root>/user-config/<app-store>/postgresql/ssl:/etc/postgresql/ssl:ro
     command:
       - postgres
       - -c
@@ -59,7 +59,7 @@ services:
       - hba_file=/etc/postgresql/pg_hba.conf
 ```
 
-Replace `<app-store>` with your Runtipi store slug. Place conf files and `ssl/server.crt` + `ssl/server.key` next to that compose file, enable user-config for the app, then restart.
+Replace `<runtipi-root>` with the Runtipi install directory and `<app-store>` with the store slug. Place conf files and `ssl/server.crt` + `ssl/server.key` next to that compose file, enable user-config for the app, then restart.
 
 Tip: start from the image sample:
 
@@ -81,7 +81,7 @@ openssl req -new -x509 -days 3650 -nodes \
 chmod 600 server.key && chown 999:999 server.crt server.key
 ```
 
-Put `server.crt` / `server.key` under `user-config/<app-store>/postgresql/ssl/`.
+Put `server.crt` / `server.key` under `<runtipi-root>/user-config/<app-store>/postgresql/ssl/`.
 
 In `postgresql.conf`, set these three lines (paths must match the volume mount):
 

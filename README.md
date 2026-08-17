@@ -26,6 +26,11 @@ Each app lives under `apps/<app-id>/`:
 
 Runtipi Compose container names are `{app-id}_<app-store>-{service}-1` (e.g. `vault_<app-store>-vault-1`, `postgresql_<app-store>-postgresql-1`). `{app}-{store}` is not a DNS name. Confirm with `docker ps`.
 
+On the host, paths are relative to the Runtipi install directory (`<runtipi-root>`, the folder that contains `app-data/` and `user-config/`) and the store slug (`<app-store>` from Settings → App Stores, not the GitHub repo name):
+
+- App data: `<runtipi-root>/app-data/<app-store>/<app-id>/` (`app.env` plus bind-mounted `data/`)
+- User-config: `<runtipi-root>/user-config/<app-store>/<app-id>/`
+
 ## Adding this store to Runtipi
 
 1. Open **Settings → App Stores → Add App Store**

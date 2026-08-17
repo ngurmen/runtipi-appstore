@@ -1,6 +1,6 @@
 # Pocket ID
 
-Lightweight [OpenID Connect Certified™](https://openid.net/certification/) and OAuth 2.0 provider using the [official Docker image](https://hub.docker.com/r/pocketid/pocket-id). Users sign in with passkeys only — no passwords, and no extra database container. SQLite lives on the app data volume.
+Lightweight [OpenID Connect Certified™](https://openid.net/certification/) and OAuth 2.0 provider using the [official Docker image](https://hub.docker.com/r/pocketid/pocket-id). Users sign in with passkeys only — no passwords, and no extra database container. SQLite lives in `data/` on the host.
 
 This is an **identity provider**, not a reverse-proxy login gate like Authelia. Each app you want to protect must support OIDC and be registered as a client here.
 
@@ -11,12 +11,17 @@ This is an **identity provider**, not a reverse-proxy login gate like Authelia. 
 | Image | `pocketid/pocket-id:v2.13.0` |
 | Host port | `1411` |
 | Container port | `1411` |
-| Database | SQLite at `/app/data/pocket-id.db` |
+| Database | SQLite (`pocket-id.db` + WAL) |
 | Process user | Runtipi `${UID}:${GID}` via `PUID` / `PGID` |
 
-| Host path (under app data) | Container | Purpose |
+App files live under `<runtipi-root>/app-data/<app-store>/pocket-id/` (`<runtipi-root>` is the Runtipi install directory; `<app-store>` is the store slug from Settings):
+
+| Host path | Container | Purpose |
 | --- | --- | --- |
-| `data` | `/app/data` | SQLite DB, uploads, GeoLite DB |
+| `app.env` | (not mounted) | Install form values, including the encryption key |
+| `data/` | `/app/data` | Persistent volume |
+| `data/pocket-id.db` (+ `-wal` / `-shm`) | `/app/data/pocket-id.db` | SQLite database |
+| `data/uploads/` | `/app/data/uploads` | Uploaded files |
 
 Timezone follows Runtipi `TZ`.
 
@@ -25,7 +30,7 @@ Timezone follows Runtipi `TZ`.
 1. Enable **Reverse proxy** and set the domain you will use (for example `id.example.com`). Passkeys need HTTPS; `http://IP:1411` will not work except on exact `localhost`.
 2. Set **Application URL** to that same URL, including `https://`. This value is the OIDC issuer, cookie domain, and WebAuthn relying party — changing it later breaks existing passkeys.
 3. Leave **Trust Proxy** on so Traefik forwarded headers are honoured.
-4. **Encryption Key** is generated for you. Back up `app.env` together with the data volume.
+4. **Encryption Key** is generated for you. Back up `app.env` together with `data/` (the `.db`, `-wal`, `-shm`, and `uploads/` files).
 
 ## First start
 
@@ -46,7 +51,7 @@ Discovery is at `https://<your-domain>/.well-known/openid-configuration`.
 | Browser (exposed domain) | `https://<your-domain>` |
 | Other containers on the Runtipi network | `http://pocket-id_<app-store>-pocket-id-1:1411` |
 
-OIDC clients should still use the **public Application URL** as the issuer, not the Docker hostname. Browsers must reach the same host that issued the passkey. If other containers cannot hairpin to the public URL, set `INTERNAL_APP_URL` via [user-config](https://runtipi.io/docs/guides/customize-app-config).
+OIDC clients should still use the **public Application URL** as the issuer, not the Docker hostname. Browsers must reach the same host that issued the passkey. If other containers cannot hairpin to the public URL, set `INTERNAL_APP_URL` via [user-config](https://runtipi.io/docs/guides/customize-app-config) at `<runtipi-root>/user-config/<app-store>/pocket-id/`.
 
 Container name is `{app-id}_<app-store>-{service}-1`. Confirm with `docker ps`.
 
