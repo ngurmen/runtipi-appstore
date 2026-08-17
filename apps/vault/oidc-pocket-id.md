@@ -182,6 +182,22 @@ That uses `http://localhost:8250/oidc/callback`, which must be in both Pocket ID
 | Login works but no permission | Role `token_policies` does not include `pocket-id-admin`, or you are not in `vault-admins` |
 | Still prompted for root token only | Auth method not enabled, or UI method is still **Token**. Choose **OIDC**. |
 | After restart, OIDC login fails immediately | Vault is **sealed**. Unseal first; OIDC cannot unseal. |
+| Chrome **Dangerous site** / phishing warning on logout (`/ui/vault/auth`) | Google Safe Browsing false positive on the Vault login page (see below). Not a Pocket ID failure. |
+
+### Chrome “Dangerous site” after logout
+
+Logout sends the browser to `https://vault.example.com/ui/vault/auth`. That is Vault’s own login UI. Google Safe Browsing often flags it as phishing because:
+
+- The page looks like HashiCorp Vault, but the host is not `vaultproject.io`.
+- A hostname that contains `vault` (for example `vault.example.com`) is a common extra trigger.
+
+Login can still work: the OIDC flow spends most of its time on Pocket ID, then lands inside the authenticated UI. Logout is a top-level navigation to the login page, which is when the interstitial appears.
+
+What to do:
+
+1. If you trust this host, use **Only visit this unsafe site** once so you can keep working.
+2. Report a false positive: [Google Safe Browsing — this page is safe](https://safebrowsing.google.com/safebrowsing/report_error/). Clearing can take hours to days.
+3. Lasting fix: give Vault a Traefik hostname that does **not** contain `vault` (for example `secrets.example.com`). Then update Pocket ID callback URLs and the Vault role `allowed_redirect_uris` to match. Changing `APP_URL` / the Vault domain without that update breaks OIDC.
 
 Useful reads:
 
