@@ -1,6 +1,6 @@
 services:
   immich-kiosk:
-    image: ghcr.io/damongolding/immich-kiosk:0.42.0
+    image: ghcr.io/damongolding/immich-kiosk:0.43.1
     user: '1000'
     tty: true
     volumes:
