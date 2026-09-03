@@ -8,7 +8,7 @@ This is an **identity provider**, not a reverse-proxy login gate like Authelia. 
 
 | Setting | Value |
 | --- | --- |
-| Image | `pocketid/pocket-id:v2.13.0` |
+| Image | `pocketid/pocket-id:v2.14.0` |
 | Host port | `1411` |
 | Container port | `1411` |
 | Database | SQLite (`pocket-id.db` + WAL) |
