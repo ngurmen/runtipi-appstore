@@ -10,8 +10,8 @@
     "utilities"
   ],
   "description": "Lightweight OpenID Connect Certified™ identity provider that signs users in with passkeys. Single container with SQLite; no passwords and no extra database.",
-  "tipi_version": 1,
-  "version": "v2.13.0",
+  "tipi_version": 2,
+  "version": "v2.14.0",
   "source": "https://github.com/pocket-id/pocket-id",
   "website": "https://pocket-id.org",
   "exposable": true,

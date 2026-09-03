@@ -1,6 +1,6 @@
 services:
   pocket-id:
-    image: pocketid/pocket-id:v2.13.0
+    image: pocketid/pocket-id:v2.14.0
     volumes:
       - ${APP_DATA_DIR}/data:/app/data
     environment:
