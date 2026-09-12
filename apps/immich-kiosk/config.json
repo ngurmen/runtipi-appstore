@@ -10,8 +10,8 @@
     "media"
   ],
   "description": "Immich Kiosk displays Immich photos and videos in highly customizable slideshows for browsers and devices such as tablets, TVs, and digital picture frames.",
-  "tipi_version": 2,
-  "version": "0.43.1",
+  "tipi_version": 3,
+  "version": "0.43.2",
   "source": "https://github.com/damongolding/immich-kiosk",
   "website": "https://docs.immichkiosk.app/",
   "exposable": true,
