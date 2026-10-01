@@ -23,7 +23,7 @@ services:
       - |
         set -eu
         umask 077
-        root_domain="$${GARAGE_ROOT_DOMAIN:-.s3.gurmen.net}"
+        root_domain="$${GARAGE_ROOT_DOMAIN:-.s3.example.com}"
         s3_region="$${GARAGE_S3_REGION:-garage}"
         bucket="$${GARAGE_DEFAULT_BUCKET:-default}"
         cat > /config/garage.toml << EOF

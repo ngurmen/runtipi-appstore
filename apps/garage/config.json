@@ -10,7 +10,7 @@
     "utilities"
   ],
   "description": "Single-node Garage S3 API behind Traefik. Path-style requests on the exposed domain, with a default bucket and key created on first start.",
-  "tipi_version": 1,
+  "tipi_version": 2,
   "version": "2.4.1",
   "source": "https://git.deuxfleurs.fr/Deuxfleurs/garage",
   "website": "https://garagehq.deuxfleurs.fr/",
@@ -28,10 +28,10 @@
     {
       "type": "text",
       "label": "S3 root domain",
-      "hint": "Public hostname with a leading dot, matching the Traefik domain. Use .s3.gurmen.net so https://s3.gurmen.net is the API root. .gurmen.net would treat the host s3 as a bucket name.",
-      "placeholder": ".s3.gurmen.net",
+      "hint": "Public hostname with a leading dot, matching the Traefik domain. Use .s3.example.com so https://s3.example.com is the API root. .example.com would treat the host s3 as a bucket name.",
+      "placeholder": ".s3.example.com",
       "required": false,
-      "default": ".s3.gurmen.net",
+      "default": ".s3.example.com",
       "env_variable": "GARAGE_ROOT_DOMAIN"
     },
     {

@@ -4,15 +4,15 @@ Single-node [Garage](https://garagehq.deuxfleurs.fr/) S3 API using [`dxflrs/gara
 
 ## Expose
 
-Set the domain to `s3.gurmen.net` (or change **S3 root domain** to match). Runtipi's Traefik route terminates Let's Encrypt and forwards to container port `3900`.
+Set the domain to `s3.example.com` (or change **S3 root domain** to match). Runtipi's Traefik route terminates Let's Encrypt and forwards to container port `3900`.
 
 Clients use path-style URLs:
 
 ```text
-https://s3.gurmen.net/<bucket>/<key>
+https://s3.example.com/<bucket>/<key>
 ```
 
-Region is `garage`. Virtual-host URLs such as `https://<bucket>.s3.gurmen.net` need a wildcard certificate, which this domain does not have. Set the client to path-style addressing.
+Region is `garage`. Virtual-host URLs such as `https://<bucket>.s3.example.com` need a wildcard certificate, which this domain does not have. Set the client to path-style addressing.
 
 The admin API stays on `127.0.0.1:3903` inside the container. Traefik does not publish it.
 
@@ -23,7 +23,7 @@ The admin API stays on `127.0.0.1:3903` inside the container. Traefik does not p
 | Image | `dxflrs/garage:v2.4.1` |
 | S3 port | `3900` |
 | Region | `garage` |
-| Root domain | `.s3.gurmen.net` |
+| Root domain | `.s3.example.com` |
 | Bucket | `default` |
 | Metadata | SQLite in `${APP_DATA_DIR}/meta` |
 | Objects | `${APP_DATA_DIR}/data` |
@@ -52,7 +52,7 @@ From anywhere that can resolve the public name:
 export AWS_ACCESS_KEY_ID=GK<suffix>
 export AWS_SECRET_ACCESS_KEY=<secret>
 export AWS_DEFAULT_REGION=garage
-aws s3 ls --endpoint-url https://s3.gurmen.net
+aws s3 ls --endpoint-url https://s3.example.com
 ```
 
 AWS CLI v2 needs path-style for a custom endpoint:
