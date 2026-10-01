@@ -1,0 +1,101 @@
+{
+  "name": "Garage",
+  "id": "garage",
+  "available": true,
+  "short_desc": "S3-compatible object storage for a single homelab node.",
+  "author": "Deuxfleurs",
+  "port": 3900,
+  "categories": [
+    "data",
+    "utilities"
+  ],
+  "description": "Single-node Garage S3 API behind Traefik. Path-style requests on the exposed domain, with a default bucket and key created on first start.",
+  "tipi_version": 1,
+  "version": "2.4.1",
+  "source": "https://git.deuxfleurs.fr/Deuxfleurs/garage",
+  "website": "https://garagehq.deuxfleurs.fr/",
+  "exposable": true,
+  "no_gui": true,
+  "dynamic_config": true,
+  "min_tipi_version": "4.5.0",
+  "supported_architectures": [
+    "arm64",
+    "amd64"
+  ],
+  "created_at": 1790888400000,
+  "updated_at": 1790888400000,
+  "form_fields": [
+    {
+      "type": "text",
+      "label": "S3 root domain",
+      "hint": "Public hostname with a leading dot, matching the Traefik domain. Use .s3.gurmen.net so https://s3.gurmen.net is the API root. .gurmen.net would treat the host s3 as a bucket name.",
+      "placeholder": ".s3.gurmen.net",
+      "required": false,
+      "default": ".s3.gurmen.net",
+      "env_variable": "GARAGE_ROOT_DOMAIN"
+    },
+    {
+      "type": "text",
+      "label": "S3 region",
+      "hint": "Region clients must send. Garage rejects any other region.",
+      "placeholder": "garage",
+      "required": false,
+      "default": "garage",
+      "env_variable": "GARAGE_S3_REGION"
+    },
+    {
+      "type": "text",
+      "label": "Default bucket",
+      "hint": "Created on first start only. Changing this later does not rename the bucket.",
+      "placeholder": "default",
+      "required": false,
+      "default": "default",
+      "env_variable": "GARAGE_DEFAULT_BUCKET"
+    },
+    {
+      "type": "random",
+      "label": "S3 access key suffix",
+      "hint": "The key ID is GK plus this value. It is written in full to the app data config/s3-credentials.txt. Leave the generated hex. Changing it after first start stops Garage.",
+      "min": 32,
+      "required": true,
+      "encoding": "hex",
+      "env_variable": "GARAGE_ACCESS_KEY_SUFFIX"
+    },
+    {
+      "type": "random",
+      "label": "S3 secret key",
+      "hint": "Secret for the default access key. Leave the generated hex. Changing it after first start stops Garage.",
+      "min": 64,
+      "required": true,
+      "encoding": "hex",
+      "env_variable": "GARAGE_SECRET_KEY"
+    },
+    {
+      "type": "random",
+      "label": "RPC secret",
+      "hint": "Cluster secret, 32 bytes of hex. Leave the generated value. Changing it after first start makes existing data unreachable.",
+      "min": 64,
+      "required": true,
+      "encoding": "hex",
+      "env_variable": "GARAGE_RPC_SECRET"
+    },
+    {
+      "type": "random",
+      "label": "Admin token",
+      "hint": "Token for the admin API on 127.0.0.1:3903 inside the container. Not published through Traefik.",
+      "min": 32,
+      "required": true,
+      "encoding": "hex",
+      "env_variable": "GARAGE_ADMIN_TOKEN"
+    },
+    {
+      "type": "random",
+      "label": "Metrics token",
+      "hint": "Token required for the Prometheus /metrics endpoint on the admin port.",
+      "min": 32,
+      "required": true,
+      "encoding": "hex",
+      "env_variable": "GARAGE_METRICS_TOKEN"
+    }
+  ]
+}

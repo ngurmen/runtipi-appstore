@@ -1,0 +1,103 @@
+services:
+  # dxflrs/garage is a scratch image (no shell), so it cannot write garage.toml.
+  # This container renders the file, then stays up. A one-shot that exits races
+  # Docker's bind mount: a missing source file is created as a directory.
+  config:
+    image: alpine:3.22
+    environment:
+      - GARAGE_RPC_SECRET=${GARAGE_RPC_SECRET}
+      - GARAGE_ADMIN_TOKEN=${GARAGE_ADMIN_TOKEN}
+      - GARAGE_METRICS_TOKEN=${GARAGE_METRICS_TOKEN}
+      - GARAGE_ROOT_DOMAIN=${GARAGE_ROOT_DOMAIN}
+      - GARAGE_S3_REGION=${GARAGE_S3_REGION}
+      - GARAGE_ACCESS_KEY_SUFFIX=${GARAGE_ACCESS_KEY_SUFFIX}
+      - GARAGE_SECRET_KEY=${GARAGE_SECRET_KEY}
+      - GARAGE_DEFAULT_BUCKET=${GARAGE_DEFAULT_BUCKET}
+    volumes:
+      - ${APP_DATA_DIR}/config:/config
+    entrypoint:
+      - /bin/sh
+      - -c
+    # $$ → $ after Compose interpolation, so the shell reads the container env.
+    command:
+      - |
+        set -eu
+        umask 077
+        root_domain="$${GARAGE_ROOT_DOMAIN:-.s3.gurmen.net}"
+        s3_region="$${GARAGE_S3_REGION:-garage}"
+        bucket="$${GARAGE_DEFAULT_BUCKET:-default}"
+        cat > /config/garage.toml << EOF
+        metadata_dir = "/var/lib/garage/meta"
+        data_dir = "/var/lib/garage/data"
+        db_engine = "sqlite"
+        replication_factor = 1
+
+        rpc_bind_addr = "[::]:3901"
+        rpc_public_addr = "127.0.0.1:3901"
+        rpc_secret = "$${GARAGE_RPC_SECRET}"
+
+        [s3_api]
+        s3_region = "$$s3_region"
+        api_bind_addr = "[::]:3900"
+        root_domain = "$$root_domain"
+
+        [admin]
+        api_bind_addr = "127.0.0.1:3903"
+        admin_token = "$${GARAGE_ADMIN_TOKEN}"
+        metrics_token = "$${GARAGE_METRICS_TOKEN}"
+        metrics_require_token = true
+        EOF
+        host="$${root_domain#.}"
+        cat > /config/s3-credentials.txt << EOF
+        endpoint=https://$$host
+        region=$$s3_region
+        bucket=$$bucket
+        access_key=GK$${GARAGE_ACCESS_KEY_SUFFIX}
+        secret_key=$${GARAGE_SECRET_KEY}
+        EOF
+        chmod 600 /config/garage.toml /config/s3-credentials.txt
+        exec sleep infinity
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - test -s /config/garage.toml && test -s /config/s3-credentials.txt
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 2s
+
+  garage:
+    image: dxflrs/garage:v2.4.1
+    depends_on:
+      config:
+        condition: service_healthy
+    volumes:
+      - ${APP_DATA_DIR}/config:/etc/garage:ro
+      - ${APP_DATA_DIR}/meta:/var/lib/garage/meta
+      - ${APP_DATA_DIR}/data:/var/lib/garage/data
+    environment:
+      - TZ=${TZ}
+      - GARAGE_CONFIG_FILE=/etc/garage/garage.toml
+      - GARAGE_DEFAULT_ACCESS_KEY=GK${GARAGE_ACCESS_KEY_SUFFIX}
+      - GARAGE_DEFAULT_SECRET_KEY=${GARAGE_SECRET_KEY}
+      - GARAGE_DEFAULT_BUCKET=${GARAGE_DEFAULT_BUCKET:-default}
+    command:
+      - /garage
+      - server
+      - --single-node
+      - --default-bucket
+    healthcheck:
+      test:
+        - CMD
+        - /garage
+        - status
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    x-runtipi:
+      is_main: true
+      internal_port: 3900
+
+x-runtipi:
+  schema_version: 2
