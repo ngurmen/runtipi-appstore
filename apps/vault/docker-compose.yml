@@ -1,6 +1,6 @@
 services:
   vault:
-    image: hashicorp/vault:2.0.4
+    image: hashicorp/vault:2.2.1
     # Match the Runtipi bind-mount owner. The image's chown (vault uid 100)
     # fails under rootless Docker / user namespaces ("Operation not permitted").
     user: "${UID}:${GID}"

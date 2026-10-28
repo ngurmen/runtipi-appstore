@@ -1,10 +1,12 @@
 # Garage
 
-Single-node [Garage](https://garagehq.deuxfleurs.fr/) S3 API using [`dxflrs/garage:v2.4.1`](https://hub.docker.com/r/dxflrs/garage). Object data lives under the app data directory. There is one copy of each object: a disk failure loses it.
+Single-node [Garage](https://garagehq.deuxfleurs.fr/) S3 API using [`dxflrs/garage:v2.5.0`](https://hub.docker.com/r/dxflrs/garage). Object data lives under the app data directory. There is one copy of each object: a disk failure loses it.
 
 ## Expose
 
 Set the domain to `s3.example.com` (or change **S3 root domain** to match). Runtipi's Traefik route terminates Let's Encrypt and forwards to container port `3900`.
+
+Generated `garage.toml` sets `public_endpoint` to `https://` plus that hostname (`https://s3.example.com` with the default root domain). Presigned and public object URLs use this value.
 
 Clients use path-style URLs:
 
@@ -20,7 +22,7 @@ The admin API stays on `127.0.0.1:3903` inside the container. Traefik does not p
 
 | Setting | Value |
 | --- | --- |
-| Image | `dxflrs/garage:v2.4.1` |
+| Image | `dxflrs/garage:v2.5.0` |
 | S3 port | `3900` |
 | Region | `garage` |
 | Root domain | `.s3.example.com` |

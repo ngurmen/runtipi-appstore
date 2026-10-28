@@ -1,6 +1,6 @@
 services:
   apprise:
-    image: caronc/apprise:1.5.4
+    image: caronc/apprise:2.0.2
     user: '1000'
     volumes:
       - ${APP_DATA_DIR}/data/config:/config
@@ -15,7 +15,7 @@ services:
       internal_port: 8000
 
   nginx:
-    image: nginx:1.27-alpine
+    image: nginx:1.30-alpine
     depends_on:
       - apprise
     environment:

@@ -3,7 +3,7 @@ services:
   # This container renders the file, then stays up. A one-shot that exits races
   # Docker's bind mount: a missing source file is created as a directory.
   config:
-    image: alpine:3.22
+    image: alpine:3.24
     environment:
       - GARAGE_RPC_SECRET=${GARAGE_RPC_SECRET}
       - GARAGE_ADMIN_TOKEN=${GARAGE_ADMIN_TOKEN}
@@ -26,6 +26,7 @@ services:
         root_domain="$${GARAGE_ROOT_DOMAIN:-.s3.example.com}"
         s3_region="$${GARAGE_S3_REGION:-garage}"
         bucket="$${GARAGE_DEFAULT_BUCKET:-default}"
+        host="$${root_domain#.}"
         cat > /config/garage.toml << EOF
         metadata_dir = "/var/lib/garage/meta"
         data_dir = "/var/lib/garage/data"
@@ -40,6 +41,7 @@ services:
         s3_region = "$$s3_region"
         api_bind_addr = "[::]:3900"
         root_domain = "$$root_domain"
+        public_endpoint = "https://$$host"
 
         [admin]
         api_bind_addr = "127.0.0.1:3903"
@@ -47,7 +49,6 @@ services:
         metrics_token = "$${GARAGE_METRICS_TOKEN}"
         metrics_require_token = true
         EOF
-        host="$${root_domain#.}"
         cat > /config/s3-credentials.txt << EOF
         endpoint=https://$$host
         region=$$s3_region
@@ -67,7 +68,7 @@ services:
       start_period: 2s
 
   garage:
-    image: dxflrs/garage:v2.4.1
+    image: dxflrs/garage:v2.5.0
     depends_on:
       config:
         condition: service_healthy

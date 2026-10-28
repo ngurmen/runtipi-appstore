@@ -10,8 +10,8 @@
     "automation"
   ],
   "description": "Apprise API lets you send notifications to 100+ services from a lightweight HTTP gateway, with optional persistent configuration keys.",
-  "tipi_version": 7,
-  "version": "1.5.4",
+  "tipi_version": 8,
+  "version": "2.0.2",
   "source": "https://github.com/caronc/apprise-api",
   "website": "https://appriseit.com/",
   "exposable": true,
@@ -22,7 +22,7 @@
     "amd64"
   ],
   "created_at": 1786680322626,
-  "updated_at": 1786680322626,
+  "updated_at": 1793229426141,
   "form_fields": [
     {
       "type": "password",

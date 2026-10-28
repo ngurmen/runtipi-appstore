@@ -1,6 +1,6 @@
 # HashiCorp Vault
 
-Identity-based secrets and encryption management using the [official Docker image](https://hub.docker.com/r/hashicorp/vault) (Community 2.0.4). Single-node [Raft integrated storage](https://developer.hashicorp.com/vault/docs/configuration/storage/raft) with the [web UI](https://developer.hashicorp.com/vault/docs/ui) enabled.
+Identity-based secrets and encryption management using the [official Docker image](https://hub.docker.com/r/hashicorp/vault) (Community 2.2.1). Single-node [Raft integrated storage](https://developer.hashicorp.com/vault/docs/configuration/storage/raft) with the [web UI](https://developer.hashicorp.com/vault/docs/ui) enabled.
 
 This is **not** a dev server. Vault starts uninitialized and sealed. The first visit to `/ui` walks you through init (key shares + threshold), download of the root token and shares, then unseal. After every restart you unseal again in the same UI unless you configure [auto-unseal](#auto-unseal).
 
@@ -8,7 +8,7 @@ This is **not** a dev server. Vault starts uninitialized and sealed. The first v
 
 | Setting | Value |
 | --- | --- |
-| Image | `hashicorp/vault:2.0.4` |
+| Image | `hashicorp/vault:2.2.1` |
 | Host port | `8200` |
 | Container port | `8200` |
 | Storage | Raft at `/vault/data` |

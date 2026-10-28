@@ -6,7 +6,7 @@ Highly configurable slideshows for displaying Immich assets on browsers and devi
 
 ## Requirements
 
-- A reachable Immich server running **v3.0.0** or above
+- A reachable Immich server running **v3.2.0** or above
 - An Immich API key with the permissions documented at [docs.immichkiosk.app](https://docs.immichkiosk.app/)
 
 ## Configuration
