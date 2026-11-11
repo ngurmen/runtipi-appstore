@@ -1,12 +1,12 @@
 # PostgreSQL 18 with pgvector
 
-[PostgreSQL](https://www.postgresql.org/) 18.6 with [pgvector](https://github.com/pgvector/pgvector) 0.8.7, using the [`pgvector/pgvector`](https://hub.docker.com/r/pgvector/pgvector) image. It is the official Postgres image plus the `vector` extension.
+[PostgreSQL](https://www.postgresql.org/) 18 with [pgvector](https://github.com/pgvector/pgvector), using [`pgvector/pgvector:pg18-trixie`](https://hub.docker.com/r/pgvector/pgvector). That tag tracks the current Postgres 18 build on Debian 13 (Trixie). It is the official Postgres image plus the `vector` extension.
 
 ## Defaults
 
 | Setting | Value |
 | --- | --- |
-| Image | `pgvector/pgvector:0.8.7-pg18` |
+| Image | `pgvector/pgvector:pg18-trixie` |
 | Host port | `5433` (avoid clashing with Runtipi’s own Postgres) |
 | Container port | `5432` |
 | Data volume | `${APP_DATA_DIR}/data` → `/var/lib/postgresql` (Postgres 18+ layout) |
@@ -64,7 +64,7 @@ Replace `<runtipi-root>` with the Runtipi install directory and `<app-store>` wi
 Tip: start from the image sample:
 
 ```bash
-docker run --rm pgvector/pgvector:0.8.7-pg18 cat /usr/share/postgresql/postgresql.conf.sample > postgresql.conf
+docker run --rm pgvector/pgvector:pg18-trixie cat /usr/share/postgresql/postgresql.conf.sample > postgresql.conf
 ```
 
 ### Enable SSL
@@ -119,7 +119,7 @@ psql "host=192.168.1.10 port=5433 dbname=postgres user=postgres sslmode=verify-f
 CREATE EXTENSION vector;
 ```
 
-Run that in each database that needs it. An existing Postgres 18.6 data directory can start on this image without a dump or `pg_upgrade`. After any database uses the `vector` type, do not switch the image back to stock `postgres`.
+Run that in each database that needs it. An existing Postgres 18 data directory can start on this image without a dump or `pg_upgrade`. Moving from the Debian 12 (Bookworm) image can log a collation version mismatch; after you check affected indexes, refresh it with `ALTER DATABASE yourdb REFRESH COLLATION VERSION`. After any database uses the `vector` type, do not switch the image back to stock `postgres`.
 
 ## Links
 

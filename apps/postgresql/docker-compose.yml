@@ -1,6 +1,6 @@
 services:
   postgresql:
-    image: pgvector/pgvector:0.8.7-pg18
+    image: pgvector/pgvector:pg18-trixie
     volumes:
       - ${APP_DATA_DIR}/data:/var/lib/postgresql
     environment:
