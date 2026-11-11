@@ -13,7 +13,7 @@ Requires Runtipi **v4.0.0** or above. Apps using the current dynamic compose for
 | [HashiCorp Vault](apps/vault/) | Identity-based secrets and encryption management |
 | [Immich Kiosk](apps/immich-kiosk/) | Configurable Immich photo/video slideshows for browsers and devices |
 | [Pocket ID](apps/pocket-id/) | Passkey-only OpenID Connect / OAuth 2.0 provider (SQLite) |
-| [PostgreSQL](apps/postgresql/) | Standalone PostgreSQL 18 database server |
+| [PostgreSQL](apps/postgresql/) | PostgreSQL 18 with pgvector |
 | [Whoami](apps/whoami/) | Sample Traefik whoami app from the template |
 
 ## Repository structure

@@ -1,12 +1,12 @@
-# PostgreSQL 18
+# PostgreSQL 18 with pgvector
 
-Standalone [PostgreSQL](https://www.postgresql.org/) 18 database server using the [official Docker image](https://hub.docker.com/_/postgres).
+[PostgreSQL](https://www.postgresql.org/) 18.6 with [pgvector](https://github.com/pgvector/pgvector) 0.8.7, using the [`pgvector/pgvector`](https://hub.docker.com/r/pgvector/pgvector) image. It is the official Postgres image plus the `vector` extension.
 
 ## Defaults
 
 | Setting | Value |
 | --- | --- |
-| Image | `postgres:18.6` |
+| Image | `pgvector/pgvector:0.8.7-pg18` |
 | Host port | `5433` (avoid clashing with Runtipi’s own Postgres) |
 | Container port | `5432` |
 | Data volume | `${APP_DATA_DIR}/data` → `/var/lib/postgresql` (Postgres 18+ layout) |
@@ -64,7 +64,7 @@ Replace `<runtipi-root>` with the Runtipi install directory and `<app-store>` wi
 Tip: start from the image sample:
 
 ```bash
-docker run --rm postgres:18.6 cat /usr/share/postgresql/postgresql.conf.sample > postgresql.conf
+docker run --rm pgvector/pgvector:0.8.7-pg18 cat /usr/share/postgresql/postgresql.conf.sample > postgresql.conf
 ```
 
 ### Enable SSL
@@ -113,9 +113,17 @@ psql "host=192.168.1.10 port=5433 dbname=postgres user=postgres sslmode=verify-f
 - Do not mount the legacy `/var/lib/postgresql/data` path — Postgres 18 expects `/var/lib/postgresql`.
 - `POSTGRES_*` / form `DB_*` values apply on **first init** only; changing them later does not alter an existing data dir.
 - `shm_size` is set to `256mb` for better sort/hash performance.
+- pgvector is installed in the image but not enabled until you create it in a database:
+
+```sql
+CREATE EXTENSION vector;
+```
+
+Run that in each database that needs it. An existing Postgres 18.6 data directory can start on this image without a dump or `pg_upgrade`. After any database uses the `vector` type, do not switch the image back to stock `postgres`.
 
 ## Links
 
 - [PostgreSQL docs](https://www.postgresql.org/docs/18/)
-- [Official image](https://hub.docker.com/_/postgres)
+- [pgvector](https://github.com/pgvector/pgvector)
+- [pgvector image](https://hub.docker.com/r/pgvector/pgvector)
 - [Runtipi user-config](https://runtipi.io/docs/guides/customize-app-config)

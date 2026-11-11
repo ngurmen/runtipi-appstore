@@ -2,17 +2,17 @@
   "name": "PostgreSQL",
   "id": "postgresql",
   "available": true,
-  "short_desc": "Standalone PostgreSQL 18 database server.",
+  "short_desc": "PostgreSQL 18 with the pgvector extension.",
   "author": "PostgreSQL Global Development Group",
   "port": 5433,
   "categories": [
     "data",
     "utilities"
   ],
-  "description": "Official PostgreSQL 18 server for shared homelab databases. Data persists under the app data directory; tune further via user-config overlays.",
-  "tipi_version": 4,
-  "version": "18.6",
-  "source": "https://github.com/docker-library/postgres",
+  "description": "PostgreSQL 18.6 with pgvector 0.8.7 for shared homelab databases. Data persists under the app data directory; run CREATE EXTENSION vector in each database that needs it.",
+  "tipi_version": 5,
+  "version": "0.8.7-pg18",
+  "source": "https://github.com/pgvector/pgvector",
   "website": "https://www.postgresql.org/",
   "exposable": false,
   "no_gui": true,
@@ -23,7 +23,7 @@
     "amd64"
   ],
   "created_at": 1786684308015,
-  "updated_at": 1786684308015,
+  "updated_at": 1794381077025,
   "form_fields": [
     {
       "type": "password",
