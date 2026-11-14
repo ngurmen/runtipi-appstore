@@ -10,8 +10,8 @@
     "utilities"
   ],
   "description": "PostgreSQL 18 with pgvector on Debian Trixie. Data persists under the app data directory; run CREATE EXTENSION vector in each database that needs it.",
-  "tipi_version": 6,
-  "version": "pg18-trixie",
+  "tipi_version": 7,
+  "version": "pgvector-0.8.7-pg18-trixie",
   "source": "https://github.com/pgvector/pgvector",
   "website": "https://www.postgresql.org/",
   "exposable": false,

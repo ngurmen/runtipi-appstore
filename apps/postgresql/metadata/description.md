@@ -1,12 +1,12 @@
 # PostgreSQL 18 with pgvector
 
-[PostgreSQL](https://www.postgresql.org/) 18 with [pgvector](https://github.com/pgvector/pgvector), using [`pgvector/pgvector:pg18-trixie`](https://hub.docker.com/r/pgvector/pgvector). That tag tracks the current Postgres 18 build on Debian 13 (Trixie). It is the official Postgres image plus the `vector` extension.
+[PostgreSQL](https://www.postgresql.org/) 18 with [pgvector](https://github.com/pgvector/pgvector), using [`pgvector/pgvector:0.8.7-pg18-trixie`](https://hub.docker.com/r/pgvector/pgvector). That tag is pgvector 0.8.7 on Debian 13 (Trixie), rebuilt from the official Postgres 18 image. The current build is PostgreSQL 18.7. It is the official Postgres image plus the `vector` extension.
 
 ## Defaults
 
 | Setting | Value |
 | --- | --- |
-| Image | `pgvector/pgvector:pg18-trixie` |
+| Image | `pgvector/pgvector:0.8.7-pg18-trixie` |
 | Host port | `5433` (avoid clashing with Runtipi’s own Postgres) |
 | Container port | `5432` |
 | Data volume | `${APP_DATA_DIR}/data` → `/var/lib/postgresql` (Postgres 18+ layout) |
@@ -64,7 +64,7 @@ Replace `<runtipi-root>` with the Runtipi install directory and `<app-store>` wi
 Tip: start from the image sample:
 
 ```bash
-docker run --rm pgvector/pgvector:pg18-trixie cat /usr/share/postgresql/postgresql.conf.sample > postgresql.conf
+docker run --rm pgvector/pgvector:0.8.7-pg18-trixie cat /usr/share/postgresql/postgresql.conf.sample > postgresql.conf
 ```
 
 ### Enable SSL
